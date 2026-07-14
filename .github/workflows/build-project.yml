@@ -67,12 +67,9 @@ jobs:
           for path in Path('visuals').glob('*.png'):
               path.unlink()
           PY
-      - name: Remove one-time builder
+      - name: Remove diagnostic
         if: steps.generate.outcome == 'success'
-        run: |
-          rm -f build.log
-          rm build_project.py
-          rm .github/workflows/build-project.yml
+        run: rm -f build.log
       - name: Commit completed repository
         if: steps.generate.outcome == 'success'
         run: |
