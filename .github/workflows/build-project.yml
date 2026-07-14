@@ -1,22 +1,21 @@
 name: Build Portfolio Project
 
 on:
-  push:
-    branches: [portfolio-build]
-    paths:
-      - build_project.py
-      - .github/workflows/build-project.yml
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
 
 jobs:
   build:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: portfolio-build
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
@@ -55,4 +54,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Build complete medical appointment no-show portfolio"
-          git push origin HEAD:portfolio-build
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
