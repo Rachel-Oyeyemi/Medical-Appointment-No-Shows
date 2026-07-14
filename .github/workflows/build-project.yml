@@ -1,0 +1,58 @@
+name: Build Portfolio Project
+
+on:
+  push:
+    branches: [portfolio-build]
+    paths:
+      - build_project.py
+      - .github/workflows/build-project.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: portfolio-build
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Generate repository source
+        run: python build_project.py
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run pipeline
+        run: python run_pipeline.py
+      - name: Run tests
+        run: pytest -q
+      - name: Generate PowerPoint
+        run: python presentation/create_presentation.py
+      - name: Keep a compact sample
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          from pathlib import Path
+          source = Path('data/sample_data/demo_appointments.csv')
+          frame = pd.read_csv(source).head(500)
+          frame.to_csv('data/sample_data/medical_appointments_sample.csv', index=False)
+          source.unlink()
+          for path in Path('data/processed').glob('*.csv'):
+              path.unlink()
+          for path in Path('visuals').glob('*.png'):
+              path.unlink()
+          PY
+      - name: Remove one-time builder
+        run: |
+          rm build_project.py
+          rm .github/workflows/build-project.yml
+      - name: Commit completed repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Build complete medical appointment no-show portfolio"
+          git push origin HEAD:portfolio-build
