@@ -1,0 +1,131 @@
+{
+  "benchmark_scope": "Deterministic synthetic appointment data; rerun on the official Kaggle CSV for final portfolio metrics.",
+  "primary_metric": "PR-AUC",
+  "models": [
+    {
+      "model": "Logistic Regression",
+      "split": "validation",
+      "threshold": 0.35818713450292394,
+      "accuracy": 0.5575555555555556,
+      "precision": 0.304845478824876,
+      "recall": 0.8254132231404959,
+      "f1": 0.44524937308442464,
+      "roc_auc": 0.7365876508053874,
+      "pr_auc": 0.45462866561469606,
+      "balanced_accuracy": 0.6547790917514484,
+      "matthews_correlation": 0.2579249856938125,
+      "specificity": 0.4841449603624009,
+      "false_positive_rate": 0.515855039637599,
+      "predicted_outreach_rate": 0.5824444444444444,
+      "true_negatives": 1710,
+      "false_positives": 1822,
+      "false_negatives": 169,
+      "true_positives": 799,
+      "confusion_matrix": [
+        [
+          1710,
+          1822
+        ],
+        [
+          169,
+          799
+        ]
+      ]
+    },
+    {
+      "model": "Logistic Regression",
+      "split": "test",
+      "threshold": 0.35818713450292394,
+      "accuracy": 0.556,
+      "precision": 0.2938513768389287,
+      "recall": 0.8607734806629834,
+      "f1": 0.438132733408324,
+      "roc_auc": 0.7645626599251569,
+      "pr_auc": 0.46818984829568244,
+      "balanced_accuracy": 0.6700251269796141,
+      "matthews_correlation": 0.2770406650202866,
+      "specificity": 0.4792767732962448,
+      "false_positive_rate": 0.5207232267037553,
+      "predicted_outreach_rate": 0.5891111111111111,
+      "true_negatives": 1723,
+      "false_positives": 1872,
+      "false_negatives": 126,
+      "true_positives": 779,
+      "confusion_matrix": [
+        [
+          1723,
+          1872
+        ],
+        [
+          126,
+          779
+        ]
+      ]
+    },
+    {
+      "model": "XGBoost",
+      "split": "validation",
+      "threshold": 0.36315789473684207,
+      "accuracy": 0.614,
+      "precision": 0.32811801519892714,
+      "recall": 0.7582644628099173,
+      "f1": 0.45803432137285494,
+      "roc_auc": 0.7333770403770018,
+      "pr_auc": 0.454828019765084,
+      "balanced_accuracy": 0.666363261982535,
+      "matthews_correlation": 0.27343882551959026,
+      "specificity": 0.5744620611551529,
+      "false_positive_rate": 0.4255379388448471,
+      "predicted_outreach_rate": 0.4971111111111111,
+      "true_negatives": 2029,
+      "false_positives": 1503,
+      "false_negatives": 234,
+      "true_positives": 734,
+      "confusion_matrix": [
+        [
+          2029,
+          1503
+        ],
+        [
+          234,
+          734
+        ]
+      ]
+    },
+    {
+      "model": "XGBoost",
+      "split": "test",
+      "threshold": 0.36315789473684207,
+      "accuracy": 0.6095555555555555,
+      "precision": 0.31542461005199307,
+      "recall": 0.8044198895027624,
+      "f1": 0.4531590413943355,
+      "roc_auc": 0.7577484074720107,
+      "pr_auc": 0.4539174423869413,
+      "balanced_accuracy": 0.6824602924565273,
+      "matthews_correlation": 0.2926401576644812,
+      "specificity": 0.5605006954102921,
+      "false_positive_rate": 0.43949930458970793,
+      "predicted_outreach_rate": 0.5128888888888888,
+      "true_negatives": 2015,
+      "false_positives": 1580,
+      "false_negatives": 177,
+      "true_positives": 728,
+      "confusion_matrix": [
+        [
+          2015,
+          1580
+        ],
+        [
+          177,
+          728
+        ]
+      ]
+    }
+  ],
+  "recommended_model": "XGBoost",
+  "threshold_cost_assumptions": {
+    "missed_no_show": 5,
+    "unnecessary_outreach": 1
+  }
+}

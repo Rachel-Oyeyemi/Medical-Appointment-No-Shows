@@ -1,0 +1,25 @@
+"""Generate the 10-slide executive PowerPoint."""
+from pathlib import Path
+import json
+from pptx import Presentation
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from pptx.util import Inches,Pt
+ROOT=Path(__file__).resolve().parents[1]; NAVY=RGBColor(18,35,63); DARK=RGBColor(38,45,55); MUTED=RGBColor(92,104,120)
+def title(slide,text,sub=""):
+    box=slide.shapes.add_textbox(Inches(.7),Inches(.4),Inches(12),Inches(.72)); p=box.text_frame.paragraphs[0]; p.text=text; p.font.size=Pt(28); p.font.bold=True; p.font.color.rgb=NAVY
+    if sub: box=slide.shapes.add_textbox(Inches(.72),Inches(1.06),Inches(11.8),Inches(.42)); p=box.text_frame.paragraphs[0]; p.text=sub; p.font.size=Pt(11); p.font.color.rgb=MUTED
+def bullets(slide,items,x=.8,y=1.55,w=5.65,h=4.9,size=18):
+    box=slide.shapes.add_textbox(Inches(x),Inches(y),Inches(w),Inches(h)); tf=box.text_frame; tf.clear()
+    for i,item in enumerate(items): p=tf.paragraphs[0] if i==0 else tf.add_paragraph(); p.text=item; p.font.size=Pt(size); p.font.color.rgb=DARK; p.space_after=Pt(10)
+def chart(slide,name):
+    path=ROOT/"visuals"/name
+    if path.exists(): slide.shapes.add_picture(str(path),Inches(6.65),Inches(1.5),width=Inches(5.85),height=Inches(4.9))
+def main():
+    metrics=json.loads((ROOT/"reports/benchmark_metrics.json").read_text()); test={r["model"]:r for r in metrics["models"] if r["split"]=="test"}; prs=Presentation(); prs.slide_width=Inches(13.333); prs.slide_height=Inches(7.5); blank=prs.slide_layouts[6]
+    slide=prs.slides.add_slide(blank); slide.background.fill.solid(); slide.background.fill.fore_color.rgb=NAVY; box=slide.shapes.add_textbox(Inches(.8),Inches(1.15),Inches(11.7),Inches(1.2)); p=box.text_frame.paragraphs[0]; p.text="Medical Appointment No Shows"; p.font.size=Pt(39); p.font.bold=True; p.font.color.rgb=RGBColor(255,255,255); box=slide.shapes.add_textbox(Inches(.82),Inches(2.55),Inches(11),Inches(1)); p=box.text_frame.paragraphs[0]; p.text="Outreach prioritization, threshold economics, and responsible healthcare AI"; p.font.size=Pt(21); p.font.color.rgb=RGBColor(210,222,241)
+    specs=[("2. Business Problem","Support attendance without restricting access",["Missed appointments waste capacity and can delay care.","Blanket outreach consumes staff time.","Prioritize supportive reminders and care navigation."],"class_distribution.png"),("3. Dataset","Kaggle Medical Appointment No Shows",["110,527 appointment records","14 source columns","Approximately 20.2% no-shows","Brazilian context and limited time coverage"],"age_distribution.png"),("4. Exploratory Analysis","Lead time, age, location, and policy context",["Longer waits are associated with risk.","Class imbalance makes accuracy misleading.","SMS status is observational.","Identifiers and invalid records require controls."],"no_show_by_waiting_bucket.png"),("5. Modeling","Transparent baseline versus nonlinear challenger",["Class-weighted Logistic Regression","Regularized XGBoost","Chronological 70/15/15 split","Validation-only threshold selection"],"feature_importance.png"),("6. Results","Deterministic demonstration benchmark",[f"Logistic test PR-AUC: {test['Logistic Regression']['pr_auc']:.3f}",f"XGBoost test PR-AUC: {test['XGBoost']['pr_auc']:.3f}",f"Validation-selected model: {metrics['recommended_model']}","Official Kaggle rerun required"],"model_comparison.png"),("7. Key Insights","Ranking and operating policy are separate",["High recall can require substantial outreach.","XGBoost reduces false alerts at its threshold.","Logistic ranks better on the demo test set.","Keep champion and challenger models."],"precision_recall_curve.png"),("8. Recommendations","Use patient-centered risk bands",["Low risk: standard reminders","Medium risk: automated options","High risk: human support or rescheduling","Never deny care based on a score"],None),("9. Future Work","Move to institutional decision support",["Time-safe attendance history","Appointment, provider, travel, and language features","Calibration and temporal cross-validation","Randomized intervention evaluation"],None)]
+    for heading,sub,items,img in specs:
+        slide=prs.slides.add_slide(blank); title(slide,heading,sub); bullets(slide,items) if img else bullets(slide,items,1,1.7,11.2,4.7,21); chart(slide,img) if img else None
+    slide=prs.slides.add_slide(blank); slide.background.fill.solid(); slide.background.fill.fore_color.rgb=NAVY; box=slide.shapes.add_textbox(Inches(.8),Inches(1.15),Inches(11.7),Inches(.9)); p=box.text_frame.paragraphs[0]; p.text="10. Conclusion"; p.font.size=Pt(34); p.font.bold=True; p.font.color.rgb=RGBColor(255,255,255); box=slide.shapes.add_textbox(Inches(1),Inches(2.35),Inches(11.2),Inches(2.6)); p=box.text_frame.paragraphs[0]; p.text="Responsible no-show prediction combines leakage-aware modeling, transparent outreach thresholds, patient-centered interventions, equity monitoring, and human oversight."; p.font.size=Pt(27); p.font.color.rgb=RGBColor(220,230,245); p.alignment=PP_ALIGN.CENTER; prs.save(Path(__file__).with_name("Medical_Appointment_No_Shows_Executive_Presentation.pptx"))
+if __name__=="__main__": main()
