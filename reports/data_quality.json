@@ -1,0 +1,16 @@
+{
+  "input_rows": 30000,
+  "output_rows": 30000,
+  "rows_removed": 0,
+  "input_columns": 14,
+  "missing_cells_before": 0,
+  "exact_duplicate_rows_before": 0,
+  "invalid_age_rows_removed": 0,
+  "negative_wait_rows_removed": 0,
+  "target_positive_rows": 6324,
+  "target_positive_rate": 0.2108,
+  "date_min": "2016-04-29",
+  "date_max": "2016-06-09",
+  "unique_patients": 11015,
+  "unique_neighbourhoods": 25
+}
