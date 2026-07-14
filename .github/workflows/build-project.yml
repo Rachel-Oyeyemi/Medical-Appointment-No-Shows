@@ -4,6 +4,9 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened]
+    paths:
+      - build_project.py
+      - .github/workflows/build-project.yml
 
 permissions:
   contents: write
@@ -21,18 +24,34 @@ jobs:
         with:
           python-version: "3.11"
       - name: Generate repository source
+        id: generate
+        continue-on-error: true
         run: |
           mkdir -p notebooks
-          python build_project.py
+          python build_project.py > build.log 2>&1
+      - name: Commit builder diagnostic
+        if: steps.generate.outcome == 'failure'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add build.log
+          git commit -m "Capture portfolio builder diagnostic"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          exit 1
       - name: Install dependencies
+        if: steps.generate.outcome == 'success'
         run: pip install -r requirements.txt
       - name: Run pipeline
+        if: steps.generate.outcome == 'success'
         run: python run_pipeline.py
       - name: Run tests
+        if: steps.generate.outcome == 'success'
         run: pytest -q
       - name: Generate PowerPoint
+        if: steps.generate.outcome == 'success'
         run: python presentation/create_presentation.py
       - name: Keep a compact sample
+        if: steps.generate.outcome == 'success'
         run: |
           python - <<'PY'
           import pandas as pd
@@ -47,10 +66,12 @@ jobs:
               path.unlink()
           PY
       - name: Remove one-time builder
+        if: steps.generate.outcome == 'success'
         run: |
           rm build_project.py
           rm .github/workflows/build-project.yml
       - name: Commit completed repository
+        if: steps.generate.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
