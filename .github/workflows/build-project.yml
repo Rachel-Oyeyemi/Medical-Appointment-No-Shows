@@ -21,7 +21,9 @@ jobs:
         with:
           python-version: "3.11"
       - name: Generate repository source
-        run: python build_project.py
+        run: |
+          mkdir -p notebooks
+          python build_project.py
       - name: Install dependencies
         run: pip install -r requirements.txt
       - name: Run pipeline
