@@ -67,9 +67,11 @@ jobs:
           for path in Path('visuals').glob('*.png'):
               path.unlink()
           PY
-      - name: Remove diagnostic
+      - name: Prepare repository commit
         if: steps.generate.outcome == 'success'
-        run: rm -f build.log
+        run: |
+          rm -f build.log
+          rm -f .github/workflows/ci.yml
       - name: Commit completed repository
         if: steps.generate.outcome == 'success'
         run: |
