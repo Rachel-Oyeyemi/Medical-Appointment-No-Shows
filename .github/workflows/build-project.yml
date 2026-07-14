@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      - name: Install builder bootstrap dependency
+        run: pip install nbformat
       - name: Generate repository source
         id: generate
         continue-on-error: true
@@ -68,6 +70,7 @@ jobs:
       - name: Remove one-time builder
         if: steps.generate.outcome == 'success'
         run: |
+          rm -f build.log
           rm build_project.py
           rm .github/workflows/build-project.yml
       - name: Commit completed repository
